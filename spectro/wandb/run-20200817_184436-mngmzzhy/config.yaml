@@ -1,0 +1,74 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.9.4
+    framework: tensorflow
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.3
+alpha:
+  desc: null
+  value: 0.1
+batch_size:
+  desc: null
+  value: 32
+beta_1:
+  desc: null
+  value: 0.99
+beta_2:
+  desc: null
+  value: 0.999
+conv1:
+  desc: null
+  value: 32
+conv2:
+  desc: null
+  value: 32
+conv3:
+  desc: null
+  value: 256
+conv4:
+  desc: null
+  value: 128
+drop1:
+  desc: null
+  value: 0.4157433763355031
+drop2:
+  desc: null
+  value: 0.3632214008565777
+epochs:
+  desc: null
+  value: 97
+kernel1:
+  desc: null
+  value:
+  - 3
+  - 3
+kernel2:
+  desc: null
+  value:
+  - 3
+  - 3
+kernel3:
+  desc: null
+  value:
+  - 3
+  - 3
+kernel4:
+  desc: null
+  value:
+  - 3
+  - 3
+l2_rate:
+  desc: null
+  value: 0.007736164754223732
+lr:
+  desc: null
+  value: 0.0005198805192069313
+pool1:
+  desc: null
+  value:
+  - 2
+  - 2

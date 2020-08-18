@@ -12,14 +12,14 @@ N_FFT = 2048
 HOP_LENGTH = 512
 N_MELS = 60
 SILENCE = 0.0018
+NOISE = 0.0072
 SAMPLE_LENGTH = 0.5 #s
 SAMPLE_SIZE = int(np.ceil(SR*SAMPLE_LENGTH))
-NOISE_RATIO = 0.3
+NOISE_RATIO = 0.25
 
 LABELS = ["cough", "not"]
 
 AUGMENT = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/noise/"
-AUGMENT2 = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/static_noise/"
 noises = []
 
 def envelope(signal, rate, thresh):
@@ -51,7 +51,7 @@ def melspectrogram(signal):
     spectro = spectro.astype(np.float32)
     return spectro
 
-def load_noises(n=4):
+def load_noises(n=2):
     ns = []
     ids = []
     for _ in range(n):
@@ -135,12 +135,6 @@ if __name__ == '__main__':
             continue
 
         noises.append(AUGMENT+audio)
-
-    for audio2 in os.listdir(AUGMENT2):
-        if os.path.splitext(audio2)[-1] != ".wav":
-            continue
-
-        noises.append(AUGMENT2 + audio2)
 
     DATA_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/dataset/"
     TEST_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/test/"

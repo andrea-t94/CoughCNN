@@ -1,0 +1,23 @@
+{
+    "root": "/Users/andreatamburri/Documents/GitHub/CoughCNN",
+    "program": "/Users/andreatamburri/Documents/GitHub/CoughCNN/spectro/model.py",
+    "git": {
+        "remote": "https://github.com/Splinter0/CoughCNN.git",
+        "commit": "71005bf7056f657ea30cb676d50fff999baa1f11"
+    },
+    "email": "tamburriandrea1@gmail.com",
+    "startedAt": "2020-08-17T15:39:38.603982",
+    "host": "MacBook-Pro-di-Andrea.local",
+    "username": "andreatamburri",
+    "executable": "/usr/local/bin/python3.8",
+    "os": "macOS-10.15.5-x86_64-i386-64bit",
+    "python": "3.8.3",
+    "cpu_count": 4,
+    "args": [],
+    "state": "failed",
+    "jobType": null,
+    "mode": "run",
+    "project": "CoughDetectionv3",
+    "heartbeatAt": "2020-08-17T15:42:17.305726",
+    "exitcode": 1
+}

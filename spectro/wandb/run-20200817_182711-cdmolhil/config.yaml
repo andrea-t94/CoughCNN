@@ -1,0 +1,39 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.9.4
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.3
+batch_size:
+  desc: null
+  value: 64
+conv1:
+  desc: null
+  value: 64
+conv2:
+  desc: null
+  value: 128
+conv3:
+  desc: null
+  value: 256
+conv4:
+  desc: null
+  value: 128
+drop1:
+  desc: null
+  value: 0.16476043369201224
+drop2:
+  desc: null
+  value: 0.4856709442743754
+epochs:
+  desc: null
+  value: 63
+l2_rate:
+  desc: null
+  value: 0.005098441505726315
+lr:
+  desc: null
+  value: 0.000866932006682509

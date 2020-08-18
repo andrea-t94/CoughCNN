@@ -12,7 +12,7 @@ from sklearn.metrics import precision_score, f1_score, recall_score
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Flatten, Dense, Dropout, LeakyReLU, SpatialDropout2D, GlobalAveragePooling2D
 
 
-DATASET = "dataset.npy"
+DATASET = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/dataset.npy"
 global model
 
 def load_data(f, s=False):
@@ -51,19 +51,20 @@ class ExtraCallBack(tf.keras.callbacks.Callback):
 class Model(object):
     def __init__(self, name, config, hyper=False, hyper_project="", extra=None):
         self.name = name
-        self.config = config
         self.x_extra = extra[0]
         self.y_extra = extra[1]
 
         if hyper:
             wandb.init(config=config, project=hyper_project)
+            self.config = wandb.config
             wandb.run.save()
             self.callback = WandbCallback(data_type="image", validation_data=extra)
             try:
-                os.system("mkdir sweep/"+wandb.run.name)
+                os.system("mkdir /Users/andreatamburri/Desktop/Voicemed/Detector/sweep/"+wandb.run.name)
             except:
                 pass
         else:
+            self.config = config
             log_dir = "logs/fit/"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
             self.callback = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
@@ -142,7 +143,7 @@ class Model(object):
             print("Accuracy on testing data: "+str(test_acc))
 
     def save(self):
-        folder = "sweep/"+wandb.run.name+"/"
+        folder = "/Users/andreatamburri/Desktop/Voicemed/Detector/sweep/"+wandb.run.name+"/"
         with open(folder+"model.json", "w") as json_file:
             json_file.write(self.model.to_json())
 
@@ -155,7 +156,7 @@ if __name__ == '__main__':
 
     if should_train:
         x_train, y_train, x_val, y_val, shape = load_data(DATASET)
-        x_extra, y_extra, _ = load_data("test.npy", s=True)
+        x_extra, y_extra, _ = load_data("/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/test.npy", s=True)
 
         config = dict(
             conv1 = 32,
@@ -176,7 +177,7 @@ if __name__ == '__main__':
             kernel4 = (3,3),
 
             batch_size = 128,
-            epochs = 70,
+            epochs = 3,
 
             lr = 1e-4,
             beta_1 = 0.99,
@@ -186,7 +187,7 @@ if __name__ == '__main__':
             alpha = 0.1
         )
 
-        model = Model("Spectro2", config, hyper=True, hyper_project="CoughDetectTests", extra=(x_extra, y_extra))
+        model = Model("Spectro3", config, hyper=True, hyper_project="CoughDetectionv3", extra=(x_extra, y_extra))
         model.build(shape)
         model.train(x_train, y_train, (x_val, y_val))
         model.save()
