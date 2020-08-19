@@ -8,11 +8,12 @@ from wandb.keras import WandbCallback
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_score, f1_score, recall_score
+from sklearn.metrics import accuracy_score,precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score, plot_confusion_matrix, precision_recall_curve, roc_curve, auc, classification_report
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Flatten, Dense, Dropout, LeakyReLU, SpatialDropout2D, GlobalAveragePooling2D
 
 
-DATASET = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/dataset.npy"
+DATASET = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/Andrea/dataset.npy"
+TESTSET = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/Andrea/test.npy"
 global model
 
 def load_data(f, s=False):
@@ -41,9 +42,10 @@ def load_data(f, s=False):
 
 class ExtraCallBack(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
-        acc = model.test(model.x_extra, model.y_extra, extra=True)
+        score = model.test(model.x_extra, model.y_extra, extra=True)
         try:
-            wandb.log({'real_acc': acc})
+            wandb.log({'score':score})
+            print("  score of CNN" + wandb.run.name + ":"+str(score))
         except:
             pass
         #print("Evaluating over our own dataset, accuracy: "+str(acc))
@@ -122,23 +124,43 @@ class Model(object):
         )
 
     def test(self, x_test, y_test, extra=True):
-        test_err, test_acc = self.model.evaluate(x_test, y_test, verbose=0)
+        #test_err, test_acc = self.model.evaluate(x_test, y_test, verbose=0)
 
-        """# predict probabilities for test set
+        # predict probabilities for test set
         yhat_probs = self.model.predict(x_test, verbose=0)
         # predict crisp classes for test set
         yhat_classes = self.model.predict_classes(x_test, verbose=0)
-        precision = precision_score(y_test, yhat_classes)
+
+        Y_test = np.argmax(y_test, axis=-1)
+        acc = round(accuracy_score(Y_test, yhat_classes), 4) * 100
+        print('Accuracy: %f' % acc)
+        precision = round(precision_score(Y_test, yhat_classes), 4) * 100
         print('Precision: %f' % precision)
         # recall: tp / (tp + fn)
-        recall = recall_score(y_test, yhat_classes)
+        recall = round(recall_score(Y_test, yhat_classes), 4) * 100
         print('Recall: %f' % recall)
         # f1: 2 tp / (2 tp + fp + fn)
-        f1 = f1_score(y_test, yhat_classes)
-        print('F1 score: %f' % f1)"""
+        f1 = round(f1_score(Y_test, yhat_classes), 4) * 100
+        print('F1 score: %f' % f1)
+        # area under roc curve
+        auroc = round(roc_auc_score(Y_test, yhat_classes), 4) * 100
+        print('Auroc: %f' % auroc)
+        tn, fp, fn, tp = confusion_matrix(Y_test, yhat_classes).ravel()
+        confusion_matrix_abs_nums = {"FP": fp, "FN": fn, "TN": tn, "TP": tp}
+
+        # print (classification_report(Y_test, y_pred))
+
+        score = {
+            "Accuracy %": acc,
+            "Precision %": precision,
+            "Recall %": recall,
+            "F1-Score %": f1,
+            "AUROC %": auroc,
+            "ConfusionMatrixCounts": confusion_matrix_abs_nums
+        }
 
         if extra:
-            return test_acc
+            return score
         else:
             print("Accuracy on testing data: "+str(test_acc))
 
@@ -156,7 +178,7 @@ if __name__ == '__main__':
 
     if should_train:
         x_train, y_train, x_val, y_val, shape = load_data(DATASET)
-        x_extra, y_extra, _ = load_data("/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/test.npy", s=True)
+        x_extra, y_extra, _ = load_data(TESTSET, s=True)
 
         config = dict(
             conv1 = 32,
@@ -177,7 +199,7 @@ if __name__ == '__main__':
             kernel4 = (3,3),
 
             batch_size = 128,
-            epochs = 3,
+            epochs = 70,
 
             lr = 1e-4,
             beta_1 = 0.99,
