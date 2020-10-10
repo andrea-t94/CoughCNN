@@ -10,6 +10,14 @@ metric:
   goal: minimize
 parameters:
   lr:
+    distribution: log_uniform
+    min: 0.00001
+    max: 0.01
+  drop1:
     distribution: uniform
-    min: 0.000001
-    max: 0.1
+    min: 0.035
+    max: 0.14
+  drop2:
+    distribution: uniform
+    min: 0.07
+    max: 0.28

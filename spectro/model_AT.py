@@ -1,3 +1,5 @@
+#AT MODEL CNN FOR COUGH DETECTION, ADDED OTHER TWO LAYERS AS WELL AS EXTRACALLBACK IN WANDB
+
 import os
 import wandb
 import datetime
@@ -83,15 +85,25 @@ class Model(object):
             LeakyReLU(alpha=self.config["alpha"]),
             BatchNormalization(),
 
-            MaxPooling2D(self.config["pool1"], padding='same'),
-
             SpatialDropout2D(self.config["drop1"]),
             Conv2D(self.config["conv3"], self.config["kernel3"], kernel_regularizer=l2(self.config["l2_rate"])),
             LeakyReLU(alpha=self.config["alpha"]),
             BatchNormalization(),
 
+            MaxPooling2D(self.config["pool1"], padding='same'),
+
             SpatialDropout2D(self.config["drop2"]),
             Conv2D(self.config["conv4"], self.config["kernel4"], kernel_regularizer=l2(self.config["l2_rate"])),
+            LeakyReLU(alpha=self.config["alpha"]),
+            BatchNormalization(),
+
+            SpatialDropout2D(self.config["drop2"]),
+            Conv2D(self.config["conv5"], self.config["kernel5"], kernel_regularizer=l2(self.config["l2_rate"])),
+            LeakyReLU(alpha=self.config["alpha"]),
+            BatchNormalization(),
+
+            SpatialDropout2D(self.config["drop2"]),
+            Conv2D(self.config["conv6"], self.config["kernel6"], kernel_regularizer=l2(self.config["l2_rate"])),
             LeakyReLU(alpha=self.config["alpha"]),
             BatchNormalization(),
 
@@ -198,8 +210,14 @@ if __name__ == '__main__':
             conv4 = 64,
             kernel4 = (3,3),
 
+            conv5=128,
+            kernel5=(3, 3),
+
+            conv6=128,
+            kernel6=(3, 3),
+
             batch_size = 128,
-            epochs = 70,
+            epochs = 100,
 
             lr = 1e-4,
             beta_1 = 0.99,
@@ -212,6 +230,7 @@ if __name__ == '__main__':
         model = Model("Spectro3", config, hyper=True, hyper_project="CoughDetectionv3", extra=(x_extra, y_extra))
         model.build(shape)
         model.train(x_train, y_train, (x_val, y_val))
+        model.test(x_val, y_val,extra=False)
         model.save()
 
     else:

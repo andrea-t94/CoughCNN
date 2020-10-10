@@ -11,3 +11,26 @@ binary/model.json
 binary/test.wav
 binary/__pycache__/
 
+.idea
+
+.DS_Store
+
+#Temporaly Directories
+samples
+uploads
+
+#Python Enviroment
+*env
+
+# IDE'S
+.idea
+.vscode
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/

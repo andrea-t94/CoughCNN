@@ -1,0 +1,39 @@
+400 response executing GraphQL.
+{"errors":[{"message":"Invalid kind \ufffdK\u001e\ufffd\ufffdڝ\ufffd\ufffdj֦n\ufffd\ufffd\ufffd\ufffd޲Kh\ufffd\ufffdh\ufffdǦy\ufffd\ufffdzל\ufffd\ufffd\ufffd. Expected Run or BucketType","path":["upsertBucket"]}],"data":{"upsertBucket":null}}
+[34m[1mwandb[0m: [32m[41mERROR[0m Error while calling W&B API: Invalid kind �K��ڝ��j֦n����޲Kh��h�Ǧy��zל���. Expected Run or BucketType (<Response [400]>)
+[34m[1mwandb[0m: [32m[41mERROR[0m <Response [400]>
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/apis/__init__.py", line 60, in wrapper
+    return func(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/apis/internal.py", line 786, in upsert_run
+    response = self.gql(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/retry.py", line 95, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/apis/internal.py", line 116, in execute
+    six.reraise(*sys.exc_info())
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/six.py", line 703, in reraise
+    raise value
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/apis/internal.py", line 110, in execute
+    return self.client.execute(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/gql/transport/requests.py", line 39, in execute
+    request.raise_for_status()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/requests/models.py", line 940, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://api.wandb.ai/graphql
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/andreatamburri/Documents/GitHub/CoughCNN/spectro/model_AT.py", line 228, in <module>
+    model = Model("Spectro3", config, hyper=True, hyper_project="CoughDetectionv3", extra=(x_extra, y_extra))
+  File "/Users/andreatamburri/Documents/GitHub/CoughCNN/spectro/model_AT.py", line 61, in __init__
+    wandb.run.save("/Users/andreatamburri/Desktop/Voicemed/Detector/")
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/wandb_run.py", line 397, in save
+    upsert_result = api.upsert_run(id=id or self.storage_id, name=self.id, commit=api.git.last_commit,
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/wandb/apis/__init__.py", line 62, in wrapper
+    raise CommError(err.response, err)
+wandb.apis.CommError: <Response [400]>

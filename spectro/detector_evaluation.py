@@ -63,7 +63,7 @@ class Detector(object):
 
         yhat_probs = self.model.predict(x_test, verbose=0)
         # predict crisp classes for test set
-        yhat_classes = self.model.predict_classes(x_test, verbose=0)
+        yhat_classes = np.argmax(self.model.predict(x_test, verbose=0),axis=-1)
         y_test = np.argmax(y_test,axis=-1)
         acc = round(accuracy_score(y_test, yhat_classes), 4) * 100
         print('Accuracy: %f' % acc)
