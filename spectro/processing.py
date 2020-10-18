@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import librosa.display
+from math import floor
+from random import shuffle
 import matplotlib.pyplot as plt
 from speechpy.processing import cmvn
 
@@ -17,9 +19,15 @@ SAMPLE_SIZE = int(np.ceil(SR*SAMPLE_LENGTH))
 NOISE_RATIO = 0.3
 
 LABELS = ["cough", "not"]
+exclude_list = ['LICENSE.md', '.DS_Store', 'README.md', 'combined_data.csv', 'file_name.tar.gz', '.git', 'metadata_compiled.csv']
 
 AUGMENT = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/noise/"
 AUGMENT2 = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/static_noise/"
+COSWARA = "/Users/andreatamburri/Desktop/Voicemed/Dataset/CoswaraDataset2/"
+COUGHVID = "/Users/andreatamburri/Desktop/Voicemed/Dataset/COUGHVID/"
+DATA_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/MainDataset/"
+SUB_DATA_FOLDER = "CoughDetection"
+HOLDOUT_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/HoldOutDataset/"
 noises = []
 
 def envelope(signal, rate, thresh):
@@ -129,28 +137,76 @@ def generate_dataset(folder, aug=False):
 
     return data
 
+
+
+
+def import_from_coswara(data_source, sub_data_source, output_source, exclude_list, interest_label = 'cough'):
+    for folder in os.listdir(data_source+sub_data_source+"/"):
+        if folder not in exclude_list:
+            if folder == interest_label:
+                print("processing " + folder)
+                for subfolder in tqdm(os.listdir(data_source+sub_data_source+"/"+folder+"/")):
+                    if subfolder not in exclude_list:
+                        for audio in os.listdir(data_source+sub_data_source+"/"+folder+"/"+subfolder+"/"):
+                            if audio not in exclude_list:
+                                os.system("cp "+data_source+sub_data_source+"/"+folder+"/"+subfolder+"/"+audio+" "+output_source+sub_data_source+"/"+"/"+interest_label)
+            else:
+                for subfolder in tqdm(os.listdir(data_source+sub_data_source+"/"+folder+"/")):
+                    if subfolder not in exclude_list:
+                        for audio in os.listdir(data_source+sub_data_source+"/"+folder+"/"+subfolder+"/"):
+                            if audio not in exclude_list:
+                                os.system("cp "+data_source+sub_data_source+"/"+folder+"/"+subfolder+"/"+audio+" "+output_source+sub_data_source+"/"+"/not")
+
+
+def import_from_coughvid(data_source, output_source, exclude_list, interest_label = 'cough'):
+    for folder in os.listdir(data_source+sub_data_source+"/"):
+        if folder not in exclude_list:
+            print("processing " + folder)
+            for audio in tqdm(os.listdir(data_source+sub_data_source+"/"+folder+"/")[:1500]):
+                if audio not in exclude_list:
+                    os.system("cp "+data_source+sub_data_source+"/"+folder+"/"+audio+" "+output_source+sub_data_source+"/"+"/"+interest_label)
+            else:
+                continue
+
+
+def generate_holdout_set(data_source, sub_data_source, output_source, exclude_list, split_ratio):
+    for folder in os.listdir(data_source+sub_data_source+"/"):
+        if folder not in exclude_list:
+            print("generating holdout dataset from MainDataset for " +sub_data_source+" "+ folder)
+            main_set = os.listdir(data_source + sub_data_source + "/" + folder + "/")
+            holdout_len = floor(len(main_set)*split_ratio)
+            shuffle(main_set)
+            holdout_set = main_set[:holdout_len]
+            for audio in tqdm(holdout_set):
+                if audio not in exclude_list:
+                    os.system("mv "+data_source+sub_data_source+"/"+folder+"/"+audio+" "+output_source+sub_data_source+"/"+folder)
+
 if __name__ == '__main__':
-    for audio in os.listdir(AUGMENT):
-        if os.path.splitext(audio)[-1] != ".wav":
-            continue
 
-        noises.append(AUGMENT+audio)
+    generate_holdout_set(DATA_FOLDER, SUB_DATA_FOLDER, HOLDOUT_FOLDER, exclude_list, split_ratio=0.1)
 
-    for audio2 in os.listdir(AUGMENT2):
-        if os.path.splitext(audio2)[-1] != ".wav":
-            continue
-
-        noises.append(AUGMENT2 + audio2)
-
-    DATA_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/dataset/"
-    TEST_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/test/"
-
-    data = generate_dataset(DATA_FOLDER, True)
-
-    #extra = generate_dataset(EXTRA_FOLDER)
-    #data += extra
-    np.random.shuffle(data)
-    np.save("dataset.npy", data)
-
-    test = generate_dataset(TEST_FOLDER)
-    np.save("test.npy", test)
+    #import_from_coswara(COSWARA, DATA_FOLDER, exclude_list, "cough")
+    # for audio in os.listdir(AUGMENT):
+    #     if os.path.splitext(audio)[-1] != ".wav":
+    #         continue
+    #
+    #     noises.append(AUGMENT+audio)
+    #
+    # for audio2 in os.listdir(AUGMENT2):
+    #     if os.path.splitext(audio2)[-1] != ".wav":
+    #         continue
+    #
+    #     noises.append(AUGMENT2 + audio2)
+    #
+    # DATA_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/dataset/"
+    # TEST_FOLDER = "/Users/andreatamburri/Desktop/Voicemed/Detector/CoughModelData/test/"
+    #
+    # data = generate_dataset(DATA_FOLDER, True)
+    #
+    # #extra = generate_dataset(EXTRA_FOLDER)
+    # #data += extra
+    # np.random.shuffle(data)
+    # np.save("dataset.npy", data)
+    #
+    # test = generate_dataset(TEST_FOLDER)
+    # np.save("test.npy", test)
